@@ -300,6 +300,32 @@ module: {
 
 ![压缩图片](./img/压缩图片.png)
 
+#### gzip压缩
+
+我们可以使用 `compression-webpack-plugin` 插件对静态文件做一个`gzip`压缩，能极大的减小文件体积，是节省带宽和加快站点速度的有效方法，但是这种方式需要服务端支持，比如`Nginx`需要开启`gzip` 才能正常使用，[Nginx的gzip设置](https://juejin.cn/post/6844903825585897485#heading-3)
+
+```js
+// npm install --save-dev compression-webpack-plugin@5.x  注意webpack4使用5.x版本
+const CompressionWebpackPlugin = require('compression-webpack-plugin');
+
+module.exports = {
+  // ...
+  plugins: [
+    new CompressionWebpackPlugin({
+      test: new RegExp('\\.(js|css)$'), // 需要压缩的文件，正则匹配
+      threshold: 1024, // 只处理比这个值大的资源。按字节计算
+      deleteOriginalAssets: false // 是否删除原资源
+    })
+  ]
+}
+```
+
+ 打包之后的结果:
+
+![gzip压缩](./img/gzip压缩.png)
+
+本地预先生成.gz文件，这样服务器端就不用自己去生成.gz了，从而降低第一次服务器生成.gz的压力。关于`gzip`的更多配置可以参考 [官方文档](https://www.webpackjs.com/plugins/compression-webpack-plugin/)
+
 #### Tree-shaking
 
 有时候我们写的某些模块根本没有使用，但是还是被打包了，这样实际上会拖累 `webpack` 的打包速度，而且也会增加打包文件的体积，所以我们可以使用 `tree-shaking` 将这些代码剔除掉。这个是webpack自带的功能，默认支持，注意必须是 ES6 的语法，CJS 的方式不支持。
